@@ -5,7 +5,8 @@ class Feed
   def self.get_feed(network)
     time = Time.now
     source = feed_source
-    feed = feed_base(source)
+    feed = source.clone
+    feed.channel.items.clear
  
     if include_post?(network, time) && source.channel.items.length > 0
       first_feed_item = source.channel.items[0]
