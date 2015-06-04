@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get 'feeds/xing'
   get 'feeds/twitter'
   get 'feeds/pinterest'
+  get 'feeds/test'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

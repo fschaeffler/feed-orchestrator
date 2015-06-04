@@ -32,4 +32,10 @@ class FeedsController < ApplicationController
     end
   end
 
+  def test
+    respond_to do |wants|
+      wants.rss { render :text => Feed.get_feed("test").to_s }
+    end
+  end
+
 end

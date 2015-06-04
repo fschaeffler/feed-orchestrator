@@ -8,10 +8,10 @@ class Feed
     source = feed_source
     feed = source.clone
  
-    if include_post?(network, time) && source.channel.items.length > 0
+    if (network == 'test') || (include_post?(network, time) && source.channel.items.length > 0)
       first_feed_item = source.channel.items[0]
-      first_feed_item.link = first_feed_item.link + "?utm_source=" + network + "&utm_medium=feed_rchestrator&utm_content=" + time.strftime("%Y-%m-%d_%H")  + "&utm_campaign=" + time.wday.to_s + "-" + time.hour.to_s
-      first_feed_item.comments = "Re-Post: " + DateTime.parse(time.strftime("%Y-%m-%d %H")).rfc2822
+      first_feed_item.link << '?utm_source=' << network.to_s << '&utm_medium=feed_orchestrator&utm_content=' << time.strftime("%Y-%m-%d_%H")  << '&utm_campaign=' << time.wday.to_s << '-' << time.hour.to_s
+      first_feed_item.comments = "Republish: " + DateTime.parse(time.strftime("%Y-%m-%d %H")).rfc2822
       enclosure_url = first_feed_item.enclosure.url
       enclosure_type = first_feed_item.enclosure.type
       first_feed_item.enclosure = RSS::Rss::Channel::Item::Enclosure.new
