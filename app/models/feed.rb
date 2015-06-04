@@ -30,7 +30,6 @@ class Feed
   private
 
   def self.include_post?(network, time)
-    return true
     timings = posting_times[network]
 
     if timings.has_key?(time.wday)
