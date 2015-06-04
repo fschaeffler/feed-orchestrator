@@ -18,10 +18,11 @@ class Feed
       first_feed_item.enclosure.url = enclosure_url
       first_feed_item.enclosure.type = enclosure_type
       first_feed_item.enclosure.length = FastImage.new(enclosure_url).content_length
-      puts first_feed_item.enclosure.inspect
 
       feed.items.clear
       feed.items << first_feed_item
+    else
+      feed.items.clear
     end
 
     feed
@@ -32,7 +33,7 @@ class Feed
   def self.include_post?(network, time)
     timings = posting_times[network]
 
-    if timings.has_key?(time.wday)
+    if timings && timings.has_key?(time.wday)
       if timings[time.wday].include?(time.hour)
         return true
       end
