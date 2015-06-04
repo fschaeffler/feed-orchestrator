@@ -1,4 +1,5 @@
 require 'rss'
+require 'fastimage'
 
 class Feed
 
@@ -11,6 +12,13 @@ class Feed
       first_feed_item = source.channel.items[0]
       first_feed_item.link = first_feed_item.link + "?utm_source=" + network + "&utm_medium=feed_rchestrator&utm_content=" + time.strftime("%Y-%m-%d_%H")  + "&utm_campaign=" + time.wday.to_s + "-" + time.hour.to_s
       first_feed_item.comments = "Re-Post: " + DateTime.parse(time.strftime("%Y-%m-%d %H")).rfc2822
+      enclosure_url = first_feed_item.enclosure.url
+      enclosure_type = first_feed_item.enclosure.type
+      first_feed_item.enclosure = RSS::Rss::Channel::Item::Enclosure.new
+      first_feed_item.enclosure.url = enclosure_url
+      first_feed_item.enclosure.type = enclosure_type
+      first_feed_item.enclosure.length = FastImage.new(enclosure_url).content_length
+      puts first_feed_item.enclosure.inspect
 
       feed.items.clear
       feed.items << first_feed_item
@@ -22,6 +30,7 @@ class Feed
   private
 
   def self.include_post?(network, time)
+    return true
     timings = posting_times[network]
 
     if timings.has_key?(time.wday)
