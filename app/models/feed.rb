@@ -9,18 +9,21 @@ class Feed
     feed = source.clone
  
     if (network == 'test') || (include_post?(network, time) && source.channel.items.length > 0)
-      first_feed_item = source.channel.items[0]
-      first_feed_item.link << '?utm_source=' << network.to_s << '&utm_medium=feed_orchestrator&utm_content=' << time.strftime("%Y-%m-%d_%H")  << '&utm_campaign=' << time.wday.to_s << '-' << time.hour.to_s
-      first_feed_item.comments = "Republish: " + DateTime.parse(time.strftime("%Y-%m-%d %H")).rfc2822
-      enclosure_url = first_feed_item.enclosure.url
-      enclosure_type = first_feed_item.enclosure.type
-      first_feed_item.enclosure = RSS::Rss::Channel::Item::Enclosure.new
-      first_feed_item.enclosure.url = enclosure_url
-      first_feed_item.enclosure.type = enclosure_type
-      first_feed_item.enclosure.length = FastImage.new(enclosure_url).content_length
+      post = select_post(source.channel.items)
+
+      50.times.each do puts select_post(source.channel.items).link end
+
+      post.link << '?utm_source=' << network.to_s << '&utm_medium=feed_orchestrator&utm_content=' << time.strftime("%Y-%m-%d_%H")  << '&utm_campaign=' << time.wday.to_s << '-' << time.hour.to_s
+      post.comments = "Republish: " + DateTime.parse(time.strftime("%Y-%m-%d %H")).rfc2822
+      enclosure_url = post.enclosure.url
+      enclosure_type = post.enclosure.type
+      post.enclosure = RSS::Rss::Channel::Item::Enclosure.new
+      post.enclosure.url = enclosure_url
+      post.enclosure.type = enclosure_type
+      post.enclosure.length = FastImage.new(enclosure_url).content_length
 
       feed.items.clear
-      feed.items << first_feed_item
+      feed.items << post
     else
       feed.items.clear
     end
@@ -40,6 +43,21 @@ class Feed
     end
 
     false
+  end
+
+  def self.select_post(posts)
+    # exclude 'hello world'-post
+    hello_world = posts.select { |s| s.link == 'http://aws-blog.io/2015/stay-tuned/'}.first
+    posts.delete(hello_world)
+
+    no_posts = posts.length
+    base_value = 500 / no_posts
+    index = no_posts.times
+      .collect { |entry| [no_posts - entry - 1, entry * base_value + Random.rand(500)] }
+      .sort! { |left,right| left[1] <=> right[1] }
+      .last[0]
+
+    posts[index]
   end
 
   def self.feed_base(source)
